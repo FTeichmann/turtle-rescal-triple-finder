@@ -59,7 +59,7 @@ for s,p,o in graph:
     if("http" in o):
         allData[predicatesList.index(p),resourcesList.index(s),resourcesList.index(o)] = 1
 
-#print allData
+print allData
 
 #build single slices of the tensor
 sliceCollection = list()
@@ -68,3 +68,7 @@ for i in range(len(predicatesList)):
 
 #call rescal
 A, R, fit, itr, exectimes = rescal.als(sliceCollection,2)
+print R
+print A
+print fit
+print itr
