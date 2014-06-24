@@ -2,6 +2,7 @@ import logging
 from rdflib import Graph
 from scipy.sparse import *
 from scipy import *
+import numpy as np
 import imp
 import ConfigParser
 
@@ -13,7 +14,7 @@ m = number of predicates
 to use the rescal algorithm for computing the tensor factorization
 on the m n*n slices
 
-todo: implement a threshhold function and and turtle return for possible new triples
+#todo: write turtle result into file, or make it accessible to java
 """
 #read configs
 config = ConfigParser.ConfigParser()
@@ -52,14 +53,11 @@ for p in predicates:
 
 #build empty n*n*m matrix 
 allData = zeros((size(predicatesList),size(resourcesList),size(resourcesList)))
-#print allData
 
 #fill in allData to have 1's in every cell representing an existing triple
 for s,p,o in graph:
     if("http" in o):
         allData[predicatesList.index(p),resourcesList.index(s),resourcesList.index(o)] = 1
-
-print allData
 
 #build single slices of the tensor
 sliceCollection = list()
@@ -68,7 +66,32 @@ for i in range(len(predicatesList)):
 
 #call rescal
 A, R, fit, itr, exectimes = rescal.als(sliceCollection,2)
-print R
-print A
-print fit
-print itr
+
+#collect rescal result for every slice
+rescalResults = list()
+for i in range(len(predicatesList)):
+    rescalResults.append(A.dot(R[i]).dot(A.T))
+
+#build new graph to put found triples
+# for some reason namespace binding is not even needed
+newGraph = Graph()
+
+
+slicenumber=0
+i=0
+j=0
+
+for slice in rescalResults:
+    for line in slice:
+        for element in line:
+            if allData[slicenumber][i][j] != 1:
+                if rescalResults[slicenumber][i][j] >= config.get("paths","threshhold"):
+                    newGraph.add( (predicatesList[slicenumber],resourcesList[i],resourcesList[j]) )
+            j = j+1
+        j=0
+        i = i+1
+    slicenumber = slicenumber+1
+    i=0
+
+print newGraph.serialize(format='turtle')
+

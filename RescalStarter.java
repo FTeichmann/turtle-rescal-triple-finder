@@ -1,6 +1,7 @@
 import java.util.*;
 import java.io.*;
 
+
 public class RescalStarter {
     public static void main(String[] args) {
 
@@ -25,7 +26,6 @@ public class RescalStarter {
 
         System.out.println("Starting turtleReader in python now");
         try{
-
             int number1 = 10;
             int number2 = 32;
             Process p = Runtime.getRuntime().exec("python turtleReader.py ");
