@@ -1,4 +1,5 @@
 import logging
+import sys
 from rdflib import Graph
 from scipy.sparse import *
 from scipy import *
@@ -16,6 +17,7 @@ on the m n*n slices
 
 #todo: write turtle result into file, or make it accessible to java
 """
+
 #read configs
 config = ConfigParser.ConfigParser()
 config.read("config.ini")
@@ -64,8 +66,9 @@ sliceCollection = list()
 for i in range(len(predicatesList)):
     sliceCollection.append(csr_matrix(allData[i]))
 
+
 #call rescal
-A, R, fit, itr, exectimes = rescal.als(sliceCollection,2)
+A, R, fit, itr, exectimes = rescal.als(sliceCollection,int(sys.argv[2]))
 
 #collect rescal result for every slice
 rescalResults = list()
@@ -76,7 +79,6 @@ for i in range(len(predicatesList)):
 # for some reason namespace binding is not even needed
 newGraph = Graph()
 
-
 slicenumber=0
 i=0
 j=0
@@ -85,8 +87,8 @@ for slice in rescalResults:
     for line in slice:
         for element in line:
             if allData[slicenumber][i][j] != 1:
-                if rescalResults[slicenumber][i][j] >= config.get("paths","threshhold"):
-                    newGraph.add( (predicatesList[slicenumber],resourcesList[i],resourcesList[j]) )
+                if rescalResults[slicenumber][i][j] >= float(sys.argv[1]):
+                    newGraph.add( (resourcesList[i],predicatesList[slicenumber],resourcesList[j]) )
             j = j+1
         j=0
         i = i+1
