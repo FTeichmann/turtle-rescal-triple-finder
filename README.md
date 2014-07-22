@@ -22,10 +22,17 @@ https://github.com/mnick/rescal.py.git
 
 dependencies
 ============
+`python version: 2.7`,
 `rescal.py`
 `Numpy >= 1.3`,
 `SciPy >= 0.7`,
-`rdflib`.
+`rdflib >= 4.1.2`.
+
+notes on installation
+=====================
+
+- try to use pip or easyinstall to add Numpy, SciPy and rdflib packages of the latest version to your python environment
+- follow the installation routine describes in https://github.com/mnick/rescal.py.git
 
 Authors
 -------
